@@ -1,0 +1,43 @@
+name: Run Job Market Analysis
+
+on:
+  # Run this workflow automatically every Sunday at midnight UTC
+  schedule:
+    - cron: '0 0 * * 0'
+  # Allow running this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-and-commit:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Check out your repository's code
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      # Step 2: Set up a Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      # Step 3: Install the required Python libraries
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      # Step 4: Run your Python script to generate the charts
+      - name: Run Job Analyzer
+        env:
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+        run: python job_analyzer.py
+      
+      # Step 5: Commit the updated charts back to your repository
+      - name: Commit Files
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "📊 Automated weekly update of job market charts"
+          commit_user_name: GitHub Actions Bot
+          commit_user_email: actions@github.com
+          commit_author: GitHub Actions Bot <actions@github.com>
+          branch: main
+          file_pattern: charts/*.png
