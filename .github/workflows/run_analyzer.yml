@@ -10,6 +10,11 @@ on:
 jobs:
   build-and-commit:
     runs-on: ubuntu-latest
+
+    # ADD THIS PERMISSIONS BLOCK TO FIX THE 403 ERROR
+    permissions:
+      contents: write
+
     steps:
       # Step 1: Check out your repository's code
       - name: Checkout Repo
